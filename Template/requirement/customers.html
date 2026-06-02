@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Admin - BridgeThings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0a3d62;
+            --primary-light: #3c6382;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(30, 41, 59, 0.55);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            padding: 24px 32px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header-title h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        .table-container {
+            overflow-x: auto;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 12px;
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(10, 61, 98, 0.35); padding: 15px; color: white; border-bottom: 1px solid var(--card-border); }
+        td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(59, 130, 246, 0.2);
+            color: #bfdbfe;
+        }
+        .back-link {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .back-link:hover { color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <h1>Customer Administration</h1>
+                <p style="color: var(--text-muted); font-size: 13px;">Overview of client engagement and ticket volume</p>
+            </div>
+            <a href="{{ url_for('home') }}" class="back-link">← Back to Dashboard</a>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size: 18px; margin-bottom: 20px;">Monitoring Summary</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Email Address</th>
+                            <th>Tickets Raised</th>
+                            <th>Engagement Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if customers %}
+                            {% for c in customers %}
+                            <tr>
+                                <td style="font-weight: 600;">{{ c.customer_name }}</td>
+                                <td>{{ c.customer_email }}</td>
+                                <td><span class="badge">{{ c.ticket_count }}</span></td>
+                                <td style="color: #20bf6b;">High Priority Client</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No customer records found.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

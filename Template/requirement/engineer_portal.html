@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Engineer Portal - BridgeThings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0a3d62;
+            --primary-light: #3c6382;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(30, 41, 59, 0.55);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #20bf6b;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            padding: 24px 32px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header-title h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-val { font-size: 24px; font-weight: 700; display: block; margin-top: 5px; }
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        .table-container {
+            overflow-x: auto;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 12px;
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; min-width: 900px; }
+        th { background: rgba(10, 61, 98, 0.35); padding: 15px; color: white; border-bottom: 1px solid var(--card-border); }
+        td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-open { background: rgba(59, 130, 246, 0.2); color: #bfdbfe; }
+        .badge-progress { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; }
+        .badge-resolved { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; }
+        .back-link { color: var(--text-muted); text-decoration: none; font-size: 14px; }
+        .back-link:hover { color: white; }
+        .logout-btn {
+            color: #ff7675;
+            text-decoration: none;
+            background: rgba(255, 118, 117, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid rgba(255, 118, 117, 0.2);
+        }
+        #ticketSearch {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: white;
+            width: 300px;
+            outline: none;
+        }
+        /* Notifications Alert Bar */
+        .alerts { margin-bottom: 24px; }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid transparent;
+            animation: slideDown 0.3s ease;
+        }
+        .alert-success { background: rgba(16, 185, 129, 0.15); color: #a7f3d0; border-color: rgba(16, 185, 129, 0.25); }
+        .alert-warning { background: rgba(245, 158, 11, 0.15); color: #fde68a; border-color: rgba(245, 158, 11, 0.25); }
+        .alert-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.25); }
+        .alert-close { cursor: pointer; font-weight: bold; opacity: 0.6; }
+        .alert-close:hover { opacity: 1; }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <h1>Engineer Monitoring Portal</h1>
+                <p style="color: var(--text-muted); font-size: 13px;">Live view of all issued support tickets</p>
+            </div>
+            <a href="{{ url_for('home') }}" class="back-link">← Back to Dashboard</a>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </div>
+
+        <!-- Alert Notifications -->
+        <div class="alerts">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+                            <span>{{ message }}</span>
+                            <span class="alert-close" onclick="this.parentElement.style.display='none'">&times;</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" style="border-left: 4px solid var(--primary-light);">
+                <span style="color: var(--text-muted); font-size: 12px;">TOTAL TICKETS</span>
+                <span class="stat-val">{{ total_tickets }}</span>
+            </div>
+            <div class="stat-card" style="border-left: 4px solid #3b82f6;">
+                <span style="color: var(--text-muted); font-size: 12px;">OPEN</span>
+                <span class="stat-val">{{ open_tickets }}</span>
+            </div>
+            <div class="stat-card" style="border-left: 4px solid #a855f7;">
+                <span style="color: var(--text-muted); font-size: 12px;">IN PROGRESS</span>
+                <span class="stat-val">{{ in_progress_tickets }}</span>
+            </div>
+            <div class="stat-card" style="border-left: 4px solid #10b981;">
+                <span style="color: var(--text-muted); font-size: 12px;">RESOLVED</span>
+                <span class="stat-val">{{ resolved_tickets }}</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 18px;">Active Ticket Queue</h2>
+                <input type="text" id="ticketSearch" placeholder="Search by customer or MAC ID...">
+            </div>
+            <div class="table-container">
+                <table id="ticketsTable">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>MAC ID</th>
+                            <th>Priority</th>
+                            <th>Engineer</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if tickets %}
+                            {% for t in tickets %}
+                            <tr>
+                                <td><strong>{{ t.customer_name }}</strong><br><small style="color: var(--text-muted)">{{ t.customer_email }}</small></td>
+                                <td><code style="color: #74b9ff;">{{ t.mac_id }}</code></td>
+                                <td>{{ t.priority }}</td>
+                                <td>{{ t.support_engineer.split('@')[0] if t.support_engineer else 'Unassigned' }}</td>
+                                <td style="color: {{ '#ef4444' if t.is_overdue else 'inherit' }};">
+                                    {{ t.deadline if t.deadline else 'No date' }}
+                                    {{ '⚠️' if t.is_overdue }}
+                                </td>
+                                <td>
+                                    <!-- Dynamic status update dropdown -->
+                                    <form method="POST" action="{{ url_for('update_ticket_status', id=t.id) }}" style="margin: 0; display: inline-block;">
+                                        <select name="status" onchange="this.form.submit()" style="background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 6px; padding: 4px 8px; color: var(--text-main); font-size: 13px; cursor: pointer; outline: none; font-weight: 600;">
+                                            <option value="Open" {% if t.status == 'Open' %}selected{% endif %} style="background: #1e293b; color: #bfdbfe;">Open</option>
+                                            <option value="In Progress" {% if t.status == 'In Progress' %}selected{% endif %} style="background: #1e293b; color: #e9d5ff;">In Progress</option>
+                                            <option value="Resolved" {% if t.status == 'Resolved' %}selected{% endif %} style="background: #1e293b; color: #a7f3d0;">Resolved</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">No tickets found in the system.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('ticketSearch').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('#ticketsTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

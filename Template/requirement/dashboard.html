@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BridgeThings Ticket Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0a3d62;
+            --primary-light: #3c6382;
+            --primary-dark: #072a44;
+            --accent: #20bf6b;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(30, 41, 59, 0.55);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-border: rgba(255, 255, 255, 0.1);
+            
+            --badge-low-bg: rgba(32, 191, 107, 0.15);
+            --badge-low-text: #a7f3d0;
+            --badge-low-border: rgba(32, 191, 107, 0.3);
+            
+            --badge-medium-bg: rgba(250, 130, 49, 0.15);
+            --badge-medium-text: #fed7aa;
+            --badge-medium-border: rgba(250, 130, 49, 0.3);
+            
+            --badge-high-bg: rgba(239, 68, 68, 0.15);
+            --badge-high-text: #fca5a5;
+            --badge-high-border: rgba(239, 68, 68, 0.3);
+
+            --badge-open-bg: rgba(59, 130, 246, 0.15);
+            --badge-open-text: #bfdbfe;
+            --badge-open-border: rgba(59, 130, 246, 0.3);
+            
+            --badge-progress-bg: rgba(168, 85, 247, 0.15);
+            --badge-progress-text: #e9d5ff;
+            --badge-progress-border: rgba(168, 85, 247, 0.3);
+            
+            --badge-resolved-bg: rgba(16, 185, 129, 0.15);
+            --badge-resolved-text: #a7f3d0;
+            --badge-resolved-border: rgba(16, 185, 129, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient glow spots */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(10, 61, 98, 0.2) 0%, rgba(0,0,0,0) 70%);
+            top: -200px;
+            left: -200px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(32, 191, 107, 0.05) 0%, rgba(0,0,0,0) 70%);
+            bottom: -200px;
+            right: -200px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header redesign */
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            padding: 24px 32px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            margin-bottom: 30px;
+        }
+
+        .header-title h1 {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .username {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .logout-btn {
+            color: #ff7675;
+            text-decoration: none;
+            background: rgba(255, 118, 117, 0.1);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid rgba(255, 118, 117, 0.2);
+        }
+
+        .logout-btn:hover {
+            background: #ff7675;
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 118, 117, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Stats Section Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.02);
+            top: -20px;
+            right: -20px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-val {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #ffffff;
+        }
+
+        .stat-card.total { border-left: 4px solid var(--primary-light); }
+        .stat-card.open { border-left: 4px solid #3b82f6; }
+        .stat-card.in-progress { border-left: 4px solid #a855f7; }
+        .stat-card.resolved { border-left: 4px solid #10b981; }
+        .stat-card.overdue { border-left: 4px solid #ef4444; }
+        .stat-card.overdue .stat-val { color: #fca5a5; }
+
+        /* Split layout for form and list */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 1024px) {
+            .content-layout {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 60%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(60, 99, 130, 0.25);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Form Buttons */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(10, 61, 98, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(10, 61, 98, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* Image preview in form */
+        .preview-box {
+            margin-top: 15px;
+            position: relative;
+            display: none;
+        }
+
+        .preview-box img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid var(--input-border);
+        }
+
+        /* Table redesign */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            background: rgba(15, 23, 42, 0.3);
+        }
+
+        /* Beautiful Webkit Scrollbar for Table Container */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.2);
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        table {
+            width: 100%;
+            min-width: 1100px; /* Enforces horizontal scroll to prevent vertical layout squishing */
+            border-collapse: collapse;
+            font-size: 13px; /* Slightly smaller font size for compact premium presentation */
+            font-size: 14px; /* Adjusted for better legibility */
+            text-align: left;
+        }
+
+        th {
+            background: rgba(10, 61, 98, 0.35);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 12px; /* More compact cell padding */
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        td {
+            padding: 10px 12px; /* More compact cell padding */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badge Pills */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid transparent;
+        }
+
+        /* Priority Badge classes */
+        .badge-low {
+            background: var(--badge-low-bg);
+            color: var(--badge-low-text);
+            border-color: var(--badge-low-border);
+        }
+        .badge-medium {
+            background: var(--badge-medium-bg);
+            color: var(--badge-medium-text);
+            border-color: var(--badge-medium-border);
+        }
+        .badge-high {
+            background: var(--badge-high-bg);
+            color: var(--badge-high-text);
+            border-color: var(--badge-high-border);
+            animation: pulse-border 2s infinite;
+        }
+
+        /* Status Badge classes */
+        .badge-open {
+            background: var(--badge-open-bg);
+            color: var(--badge-open-text);
+            border-color: var(--badge-open-border);
+        }
+        .badge-progress {
+            background: var(--badge-progress-bg);
+            color: var(--badge-progress-text);
+            border-color: var(--badge-progress-border);
+        }
+        .badge-resolved {
+            background: var(--badge-resolved-bg);
+            color: var(--badge-resolved-text);
+            border-color: var(--badge-resolved-border);
+        }
+
+        /* Overdue / Alert formatting */
+        .text-overdue {
+            color: #ef4444;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .view-link {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .view-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .delete-link {
+            color: #ff7675;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255, 118, 117, 0.1);
+        }
+
+        .delete-link:hover {
+            background: #ff7675;
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 118, 117, 0.3);
+        }
+
+        /* Notifications Alert Bar */
+        .alerts {
+            margin-bottom: 24px;
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid transparent;
+            animation: slideDown 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fde68a;
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+
+        .alert-close {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.6;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(239, 68, 68, 0.3); }
+            50% { border-color: rgba(239, 68, 68, 0.8); }
+            100% { border-color: rgba(239, 68, 68, 0.3); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            td, th {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    
+
+<div class="container">
+
+    
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title">
+            <h1>BridgeThings Support Portal</h1>
+            <p>Enterprise IoT Issue & Ticket Management System</p>
+        </div>
+        {% if session.get('username') %}
+        <div class="user-status">
+            <a href="{{ url_for('customers') }}" style="color: var(--primary-light); text-decoration: none; font-weight: 600; font-size: 13px; margin-right: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 15px;">Customer Admin</a>
+            <a href="{{ url_for('engineer_portal') }}" style="color: var(--accent); text-decoration: none; font-weight: 600; font-size: 13px; margin-right: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 15px;">Engineer Portal</a>
+            <a href="{{ url_for('change_password') }}" style="color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 13px; margin-right: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 15px;">Change Password</a>
+            <span>Welcome, <strong class="username">{{ session.get('username') }}</strong></span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Alert Notifications -->
+    <div class="alerts">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+                        <span>{{ message }}</span>
+                        <span class="alert-close" onclick="this.parentElement.style.display='none'">&times;</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- KPI Dashboard Cards -->
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <span class="stat-label">Total Tickets</span>
+            <span class="stat-val">{{ total_tickets if total_tickets is not none else 0 }}</span>
+        </div>
+        <div class="stat-card open">
+            <span class="stat-label">Open Tickets</span>
+            <span class="stat-val">{{ open_tickets if open_tickets is not none else 0 }}</span>
+        </div>
+        <div class="stat-card in-progress">
+            <span class="stat-label">In Progress</span>
+            <span class="stat-val">{{ in_progress_tickets if in_progress_tickets is not none else 0 }}</span>
+        </div>
+        <div class="stat-card resolved">
+            <span class="stat-label">Resolved</span>
+            <span class="stat-val">{{ resolved_tickets if resolved_tickets is not none else 0 }}</span>
+        </div>
+        <div class="stat-card overdue">
+            <span class="stat-label">Overdue Tickets</span>
+            <span class="stat-val">{{ overdue_tickets if overdue_tickets is not none else 0 }}</span>
+        </div>
+    </div>
+
+    <!-- Split content layout -->
+    <div class="content-layout">
+        
+        <!-- Sidebar Form Card -->
+        <div class="card">
+            <h2 class="card-title">Create Support Ticket</h2>
+            <form method="POST" action="{{ url_for('create_ticket') }}" enctype="multipart/form-data">
+                
+                <div class="form-group">
+                    <label>Customer Name *</label>
+                    <input type="text" name="customer_name" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer Email *</label>
+                    <input type="email" name="customer_email" placeholder="john@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>MAC ID *</label>
+                    <input type="text" name="mac_id" placeholder="00:1A:2B:3C:4D:5E" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Issue Description *</label>
+                    <textarea name="description" rows="4" placeholder="Describe the telemetry/hardware issue..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select name="priority" required>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Assign Support Engineer *</label>
+                    <select name="support_engineer" required>
+                        <option value="">Select Engineer</option>
+                        {% for engineer in engineers %}
+                            <option value="{{ engineer.email }}">{{ engineer.name }} - {{ engineer.email }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sold Date</label>
+                        <input type="date" id="soldDate" name="sold_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deadline Date *</label>
+                        <input type="date" id="deadlineDate" name="deadline" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Telemetry Image</label>
+                    <input type="file" id="mobile_image" name="mobile_image" accept="image/*" onchange="previewImage(event)">
+                    
+                    <div class="preview-box" id="previewContainer">
+                        <img id="imagePreview" alt="Image Preview">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                    <button type="button" class="btn btn-secondary" onclick="deleteImage()">Clear Image</button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Main Table Card -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 12px;">
+                <h2 class="card-title" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Issued Tickets List</h2>
+                <input type="text" id="ticketSearch" placeholder="Filter by Name, MAC, or Status..." 
+                       style="background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 15px; color: white; width: 280px; font-size: 13px;">
+            </div>
+            
+            <div class="table-container">
+                <table id="ticketsTable">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>MAC ID</th>
+                            <th>Description</th>
+                            <th>Priority</th>
+                            <th>Dates</th>
+                            <th>Telemetry</th>
+                            <th>Engineer</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if tickets %}
+                            {% for ticket in tickets %}
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600; color: #ffffff;">{{ ticket.customer_name }}</div>
+                                    <div style="font-size: 13px; color: var(--text-muted);">{{ ticket.customer_email }}</div>
+                                </td>
+                                <td><code style="background: rgba(15,23,42,0.4); padding: 2px 6px; border-radius: 4px; color: #74b9ff; font-family: monospace;">{{ ticket.mac_id }}</code></td>
+                                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ ticket.description }}">{{ ticket.description }}</td>
+                                <td>
+                                    {% if ticket.priority == 'Low' %}
+                                        <span class="badge badge-low">Low</span>
+                                    {% elif ticket.priority == 'Medium' %}
+                                        <span class="badge badge-medium">Medium</span>
+                                    {% else %}
+                                        <span class="badge badge-high">High</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div style="font-size: 13px; color: var(--text-muted);">Sold: {{ ticket.sold_date }}</div>
+                                    {% if ticket.is_overdue %}
+                                        <div class="text-overdue" title="Overdue! Past deadline date.">
+                                            ⚠️ Due: {{ ticket.deadline }}
+                                        </div>
+                                    {% else %}
+                                        <div style="font-size: 13px; color: #20bf6b;">Due: {{ ticket.deadline if ticket.deadline else 'N/A' }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ticket.image %}
+                                    <a class="view-link" href="{{ url_for('static', filename='uploads/' + ticket.image) }}" target="_blank">
+                                        View Image
+                                    </a>
+                                    {% else %}
+                                    <span style="color: var(--text-muted); font-size: 13px;">No Image</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div style="font-size: 13px; max-width: 140px; overflow: hidden; text-overflow: ellipsis;" title="{{ ticket.support_engineer }}">
+                                        {{ engineer_map.get(ticket.support_engineer, ticket.support_engineer.split('@')[0]) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <!-- Dynamic status update dropdown -->
+                                    <form method="POST" action="{{ url_for('update_ticket_status', id=ticket.id) }}" style="margin: 0; display: inline-block;">
+                                        <select name="status" onchange="this.form.submit()" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--input-border); border-radius: 6px; padding: 4px 8px; color: var(--text-main); font-size: 13px; cursor: pointer; outline: none; font-weight: 600;">
+                                            <option value="Open" {% if ticket.status == 'Open' %}selected{% endif %} style="background: #1e293b; color: #bfdbfe;">Open</option>
+                                            <option value="In Progress" {% if ticket.status == 'In Progress' %}selected{% endif %} style="background: #1e293b; color: #e9d5ff;">In Progress</option>
+                                            <option value="Resolved" {% if ticket.status == 'Resolved' %}selected{% endif %} style="background: #1e293b; color: #a7f3d0;">Resolved</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <button type="button" class="btn btn-secondary edit-ticket-btn" 
+                                                style="padding: 4px 12px; font-size: 12px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.1); color: #fff;"
+                                                data-id="{{ ticket.id }}"
+                                                data-name="{{ ticket.customer_name }}"
+                                                data-email="{{ ticket.customer_email }}"
+                                                data-mac="{{ ticket.mac_id }}"
+                                                data-priority="{{ ticket.priority }}"
+                                                data-status="{{ ticket.status }}"
+                                                data-engineer="{{ ticket.support_engineer }}"
+                                                data-sold="{{ ticket.sold_date }}"
+                                                data-deadline="{{ ticket.deadline }}"
+                                                data-description="{{ ticket.description }}">
+                                        </button>
+                                        <a href="{{ url_for('delete_ticket', id=ticket.id) }}" class="delete-link" onclick="return confirm('Are you sure you want to delete this ticket?')">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="9" style="text-align:center; color: var(--text-muted); padding: 40px 10px;">
+                                No tickets available. Create one to get started.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+
+    <!-- System Settings & Email Notifications Management -->
+    <div class="card" style="margin-top: 30px;">
+        <h2 class="card-title">System Settings & Email Notifications Management</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <!-- Support Engineers Management -->
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: var(--primary-light);">Manage Support Engineers</h3>
+                
+                <!-- Add Engineer Form -->
+                <form method="POST" action="{{ url_for('add_engineer') }}" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.2); padding: 15px; border-radius: 10px; border: 1px solid var(--card-border);">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="font-size: 11px;">Engineer Name *</label>
+                        <input type="text" name="name" placeholder="E.g., Jane Smith" required style="padding: 8px 12px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="font-size: 11px;">Engineer Email *</label>
+                        <input type="email" name="email" placeholder="jane@example.com" required style="padding: 8px 12px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 8px; font-size: 13px;">Add Engineer</button>
+                </form>
+                
+                <!-- Engineers List -->
+                <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if engineers %}
+                                {% for eng in engineers %}
+                                <tr>
+                                    <td>{{ eng.name }}</td>
+                                    <td>{{ eng.email }}</td>
+                                    <td>
+                                        <a href="{{ url_for('delete_engineer', id=eng.id) }}" class="delete-link" style="padding: 2px 6px; font-size: 11px;" onclick="return confirm('Are you sure you want to remove this support engineer?')">Remove</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">No engineers registered.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Default Notification Emails Management -->
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: var(--primary-light);">Manage Default CC Notification Emails</h3>
+                
+                <!-- Add Default Email Form -->
+                <form method="POST" action="{{ url_for('add_default_email') }}" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.2); padding: 15px; border-radius: 10px; border: 1px solid var(--card-border);">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="font-size: 11px;">Notification Email Address *</label>
+                        <input type="email" name="email" placeholder="admin@example.com" required style="padding: 8px 12px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 8px; font-size: 13px;">Add Recipient Email</button>
+                </form>
+                
+                <!-- Default Emails List -->
+                <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email Address</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if default_emails %}
+                                {% for item in default_emails %}
+                                <tr>
+                                    <td>{{ item.email }}</td>
+                                    <td>
+                                        <a href="{{ url_for('delete_default_email', id=item.id) }}" class="delete-link" style="padding: 2px 6px; font-size: 11px;" onclick="return confirm('Remove this email address from notifications?')">Remove</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="2" style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">No notification recipients.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Portal Users Management -->
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: var(--primary-light);">Manage Portal Users</h3>
+                
+                <!-- Add User Form -->
+                <form method="POST" action="{{ url_for('create_portal_user') }}" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.2); padding: 15px; border-radius: 10px; border: 1px solid var(--card-border);">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="font-size: 11px;">Username *</label>
+                        <input type="text" name="username" placeholder="E.g., support_user" required style="padding: 8px 12px;" minlength="3" pattern="^[a-zA-Z0-9_]+$" title="Only letters, numbers, and underscores allowed.">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="font-size: 11px;">Email Address *</label>
+                        <input type="email" name="email" placeholder="user@example.com" required style="padding: 8px 12px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="font-size: 11px;">Password *</label>
+                        <input type="password" name="password" placeholder="••••••••" required style="padding: 8px 12px;" minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 8px; font-size: 13px;">Create Portal User</button>
+                </form>
+                
+                <!-- Portal Users List -->
+                <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if portal_users %}
+                                {% for u in portal_users %}
+                                <tr>
+                                    <td>{{ u.username }}</td>
+                                    <td>{{ u.email }}</td>
+                                    <td>
+                                        {% if u.id == session.get('user_id') %}
+                                            <span style="font-size: 11px; color: var(--accent); font-weight: 600; padding: 2px 6px; background: rgba(32, 191, 107, 0.1); border-radius: 4px; border: 1px solid rgba(32, 191, 107, 0.2); display: inline-block;">Current User</span>
+                                        {% else %}
+                                            <a href="{{ url_for('delete_portal_user', id=u.id) }}" class="delete-link" style="padding: 2px 6px; font-size: 11px;" onclick="return confirm('Are you sure you want to remove this portal user account?')">Remove</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 15px;">No portal users registered.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <!-- Edit Ticket Modal -->
+    <div id="editModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); padding: 20px 10px;">
+        <div class="card" style="margin: 5% auto; width: 100%; max-width: 600px; padding: 30px; position: relative; border: 1px solid var(--card-border); background: var(--bg-gradient); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <span style="position: absolute; right: 20px; top: 15px; font-size: 32px; font-weight: bold; cursor: pointer; color: var(--text-muted); transition: color 0.2s;" onclick="closeEditModal()" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'">&times;</span>
+            <h2 class="card-title" style="margin-bottom: 25px;">Edit Support Ticket</h2>
+            
+            <form id="editForm" method="POST" action="" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Customer Name *</label>
+                    <input type="text" id="edit_customer_name" name="customer_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer Email *</label>
+                    <input type="email" id="edit_customer_email" name="customer_email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>MAC ID *</label>
+                    <input type="text" id="edit_mac_id" name="mac_id" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Issue Description *</label>
+                    <textarea id="edit_description" name="description" rows="4" required style="resize: vertical;"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="edit_priority" name="priority" required>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="edit_status" name="status" required>
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Assign Support Engineer *</label>
+                    <select id="edit_support_engineer" name="support_engineer" required>
+                        <option value="">Select Engineer</option>
+                        {% for engineer in engineers %}
+                            <option value="{{ engineer.email }}">{{ engineer.name }} - {{ engineer.email }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sold Date</label>
+                        <input type="date" id="edit_sold_date" name="sold_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deadline Date *</label>
+                        <input type="date" id="edit_deadline" name="deadline" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Update Telemetry Image (Optional)</label>
+                    <input type="file" name="mobile_image" accept="image/*">
+                </div>
+
+                <div class="btn-group" style="flex-direction: row; gap: 12px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px;">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()" style="flex: 1; padding: 12px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- JavaScript -->
+<script>
+    // Set default dates
+    document.addEventListener("DOMContentLoaded", function() {
+        var today = new Date();
+        document.getElementById('soldDate').valueAsDate = today;
+        
+        // Default deadline: 3 days from today
+        var deadline = new Date();
+        deadline.setDate(today.getDate() + 3);
+        document.getElementById('deadlineDate').valueAsDate = deadline;
+    });
+
+    // Preview Image
+    function previewImage(event) {
+        const preview = document.getElementById('imagePreview');
+        const container = document.getElementById('previewContainer');
+        const file = event.target.files[0];
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            container.style.display = 'block';
+        }
+    }
+
+    // Delete Image
+    function deleteImage() {
+        document.getElementById('mobile_image').value = '';
+        const preview = document.getElementById('imagePreview');
+        const container = document.getElementById('previewContainer');
+        preview.src = '';
+        container.style.display = 'none';
+    }
+
+    // Close Edit Modal
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    // Modal click handlers for Edit buttons
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.edit-ticket-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const email = this.getAttribute('data-email');
+                const mac = this.getAttribute('data-mac');
+                const priority = this.getAttribute('data-priority');
+                const status = this.getAttribute('data-status');
+                const engineer = this.getAttribute('data-engineer');
+                const sold = this.getAttribute('data-sold');
+                const deadline = this.getAttribute('data-deadline');
+                const description = this.getAttribute('data-description');
+
+                document.getElementById('editForm').action = "{{ url_for('edit_ticket', id=0) }}".replace('0', id);
+                document.getElementById('edit_customer_name').value = name;
+                document.getElementById('edit_customer_email').value = email;
+                document.getElementById('edit_mac_id').value = mac;
+                document.getElementById('edit_description').value = description;
+                document.getElementById('edit_priority').value = priority;
+                document.getElementById('edit_status').value = status;
+                document.getElementById('edit_support_engineer').value = engineer;
+                document.getElementById('edit_sold_date').value = sold;
+                document.getElementById('edit_deadline').value = deadline;
+                
+                document.getElementById('editModal').style.display = 'block';
+            });
+        });
+        
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                closeEditModal();
+            }
+        });
+    });
+
+    // Ticket Monitoring Search Filter
+    document.getElementById('ticketSearch').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#ticketsTable tbody tr');
+        
+        rows.forEach(row => {
+            if (row.cells.length > 1) { // Skip "No tickets" row
+                let text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
