@@ -12,7 +12,7 @@ import secrets
 import traceback
 from datetime import datetime
 
-app = Flgiask(__name__, template_folder='Template/requirement')
+app = Flask(__name__, template_folder='Template/requirement')
 app.secret_key = os.environ.get("SECRET_KEY", "supersecretkeyforbridgethings")
 
 # Resolve absolute path to .env relative to this script directory
@@ -584,6 +584,7 @@ def forgot_password():
 def change_password():
     if request.method == 'POST':
         current_password = request.form.get('current_password')
+        new_email = request.form.get('email', '').strip()
         new_password = request.form.get('new_password')
         confirm_password = request.form.get('confirm_password')
 
@@ -591,17 +592,32 @@ def change_password():
 
         if not user or not user.check_password(current_password):
             flash('Current password is incorrect.', 'error')
-        elif new_password != confirm_password:
-            flash('New passwords do not match.', 'error')
-        elif len(new_password) < 6:
-            flash('New password must be at least 6 characters.', 'error')
-        else:
-            user.set_password(new_password)
-            db.session.commit()
-            flash('Password updated successfully!', 'success')
-            return redirect(url_for('home'))
+            return render_template('change_password.html', user_email=session.get('email'))
 
-    return render_template('change_password.html')
+        # Update Email if changed
+        if new_email and new_email != user.email:
+            existing = User.query.filter(User.email == new_email, User.id != user.id).first()
+            if existing:
+                flash('This email address is already in use by another account.', 'error')
+                return render_template('change_password.html', user_email=user.email)
+            user.email = new_email
+            session['email'] = new_email
+
+        # Update Password if provided
+        if new_password:
+            if new_password != confirm_password:
+                flash('New passwords do not match.', 'error')
+                return render_template('change_password.html', user_email=user.email)
+            elif len(new_password) < 6:
+                flash('New password must be at least 6 characters.', 'error')
+                return render_template('change_password.html', user_email=user.email)
+            user.set_password(new_password)
+
+        db.session.commit()
+        flash('Account settings updated successfully!', 'success')
+        return redirect(url_for('home'))
+
+    return render_template('change_password.html', user_email=session.get('email'))
 
 
 # Create Ticket

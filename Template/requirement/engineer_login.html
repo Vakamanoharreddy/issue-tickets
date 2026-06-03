@@ -134,6 +134,18 @@
             background: rgba(15, 23, 42, 0.8);
         }
 
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+            user-select: none;
+            font-size: 18px;
+            z-index: 5;
+        }
+
         .options-row {
             display: flex;
             justify-content: space-between;
@@ -240,7 +252,8 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="input-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Enter password" required autocomplete="current-password">
+                    <input type="password" id="password" name="password" placeholder="Enter password" required autocomplete="current-password" style="padding-right: 40px;">
+                    <span class="toggle-password" id="togglePassword">👁️</span>
                 </div>
             </div>
 
@@ -254,5 +267,17 @@
         </form>
     </div>
 
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                this.textContent = '👁️';
+            }
+        });
+    </script>
 </body>
 </html>
