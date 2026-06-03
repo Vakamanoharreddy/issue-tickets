@@ -127,12 +127,19 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-title">
-                <h1>Engineer Monitoring Portal</h1>
-                <p style="color: var(--text-muted); font-size: 13px;">Live view of all issued support tickets</p>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div style="background: #ffffff; padding: 5px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="BridgeThings Logo" style="max-height: 40px; object-fit: contain;">
+                </div>
+                <div class="header-title">
+                    <h1>Engineer Monitoring Portal</h1>
+                    <p style="color: var(--text-muted); font-size: 13px;">Live view of all issued support tickets</p>
+                </div>
             </div>
-            <a href="{{ url_for('home') }}" class="back-link">← Back to Dashboard</a>
-            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="{{ url_for('home') }}" class="back-link">← Back to Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            </div>
         </div>
 
         <!-- Alert Notifications -->
