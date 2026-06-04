@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flask Ticketing App</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f4f7fb; color: #111; }
+    .container { max-width: 900px; margin: 40px auto; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 18px 45px rgba(0,0,0,.08); }
+    h1 { color: #0d47a1; }
+    a { color: #1565c0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    pre { background: #eef2f7; padding: 16px; border-radius: 8px; overflow-x: auto; }
+    .note { margin: 24px 0; padding: 16px; border-left: 4px solid #0d47a1; background: #e8eef9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Flask Ticketing App</h1>
+    <p>This repository contains a Flask application that uses templates under <code>Template/requirement</code> and static assets under <code>static/</code>.</p>
+    <div class="note">
+      <strong>Important:</strong> GitHub Pages cannot run Flask. The real app must be hosted on a Python-capable service.</p>
+    </div>
+    <h2>Option 1: Deploy as a Flask app</h2>
+    <p>Use a Python host such as Railway, Render, Heroku, or PythonAnywhere.</p>
+    <ul>
+      <li><code>requirements.txt</code></li>
+      <li><code>Procfile</code></li>
+      <li><code>runtime.txt</code></li>
+    </ul>
+    <h2>Option 2: Use GitHub Pages static landing page</h2>
+    <p>If you want GitHub Pages, point Pages to the repository root or the <code>docs/</code> folder and this static page will be served.</p>
+    <ol>
+      <li>Open GitHub repo settings.</li>
+      <li>Go to Pages.</li>
+      <li>Select branch <code>main</code> and folder <code>/root</code> or <code>/docs</code>.</li>
+      <li>Save and wait for the site to build.</li>
+    </ol>
+  </div>
+</body>
+</html>
