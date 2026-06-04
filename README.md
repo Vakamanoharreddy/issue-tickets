@@ -17,6 +17,7 @@ This is the recommended approach for the full application.
    - `Procfile`
    - `runtime.txt`
 4. The app entrypoint is `file.py` and the WSGI app object is `app`.
+5. **Note:** If using PostgreSQL, ensure you install the driver: `pip install psycopg2-binary`
 
 ### Example with Heroku / Railway
 
