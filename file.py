@@ -252,7 +252,7 @@ BridgeThings Ticket System
         return False
 
 # Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///tickets.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tickets.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Upload Folder
