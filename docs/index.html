@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flask App Deployment</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f4f7fb; color: #111; }
+    .container { max-width: 900px; margin: 40px auto; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 18px 45px rgba(0,0,0,.08); }
+    h1 { color: #0d47a1; }
+    a { color: #1565c0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    pre { background: #eef2f7; padding: 16px; border-radius: 8px; overflow-x: auto; }
+    .note { margin: 24px 0; padding: 16px; border-left: 4px solid #0d47a1; background: #e8eef9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>GitHub Pages Deployment</h1>
+    <p>This repository contains a Flask application that requires a Python server environment. GitHub Pages is only for static HTML/CSS/JS sites, so it cannot run the full backend app.</p>
+    <div class="note">
+      <strong>Result:</strong> If you enable GitHub Pages without a static entrypoint, you will get a <strong>404 error</strong>.</p>
+    </div>
+    <h2>Option 1: Deploy the Flask app to a Python host</h2>
+    <p>Use a platform such as <strong>Railway</strong>, <strong>Render</strong>, <strong>PythonAnywhere</strong>, or <strong>Heroku</strong>. This repository now includes:</p>
+    <ul>
+      <li><code>requirements.txt</code></li>
+      <li><code>Procfile</code></li>
+      <li><code>runtime.txt</code></li>
+    </ul>
+    <p>On those hosts, deploy the repo and point the web process to <code>file:app</code>.</p>
+    <h2>Option 2: Use this static landing page for GitHub Pages</h2>
+    <p>If you want GitHub Pages, set the Pages source to the <code>docs/</code> folder in repository settings. This page will serve instead of a 404.</p>
+    <p>To use GitHub Pages with this repo:</p>
+    <ol>
+      <li>Open GitHub repo settings.</li>
+      <li>Go to Pages.</li>
+      <li>Select branch <code>main</code> and folder <code>/docs</code>.</li>
+      <li>Save and wait a few minutes for deployment.</li>
+    </ol>
+    <p><strong>Note:</strong> This static page only documents the app, it does not run the Flask server.</p>
+  </div>
+</body>
+</html>
